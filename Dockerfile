@@ -1,18 +1,10 @@
-FROM debian:jessie
+FROM alpine:3.7
+LABEL maintainer="Johannes Schickling <schickling.j@gmail.com>"
 
-ENV S3_TOOLS_VERSION 1.6.1
+ADD install.sh install.sh
+RUN sh install.sh && rm install.sh
 
-RUN \
-	apt-get -y update && \
-	apt-get --no-install-recommends --assume-yes install python-setuptools ca-certificates wget unzip liblz4-tool && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+WORKDIR /s3
 
-RUN \
-	wget "http://downloads.sourceforge.net/project/s3tools/s3cmd/${S3_TOOLS_VERSION}/s3cmd-${S3_TOOLS_VERSION}.tar.gz" -q -O - | tar xz -C /tmp && \
-	cd /tmp/s3cmd-${S3_TOOLS_VERSION} && \
-	python setup.py install && \
-	cd / && \
-	rm -rf /tmp/s3cmd
+ENTRYPOINT ["/bin/sh"]
 
-ENTRYPOINT ["/usr/local/bin/s3cmd"]
